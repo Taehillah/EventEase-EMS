@@ -11,6 +11,26 @@ ASP.NET Core MVC admin platform for venue, event, and booking management. The ap
 - In-memory fallback for local demo mode when no SQL connection string is set
 - Azure SQL schema script in `Database/CreateSchema.sql`
 
+## Current deployment
+
+- Live site: `https://eventease-ems-10534346-f0f0gudcddcehedd.canadacentral-01.azurewebsites.net`
+- Hosting: Azure App Service on the Free (`F1`) tier
+- Web app name: `eventease-ems-10534346`
+- Resource group: `DefaultResourceGroup-EUS`
+- Runtime: .NET 8
+- Source repository: `https://github.com/Taehillah/EventEase-EMS.git`
+
+The root URL redirects to the admin sign-in page:
+
+```text
+/Account/Login?ReturnUrl=%2F
+```
+
+## Sign-in
+
+- Email: `lecture@eventease.com`
+- Password: `Admin@123`
+
 ## Run prerequisites
 
 Install the .NET 8 SDK, then restore and run:
@@ -19,6 +39,8 @@ Install the .NET 8 SDK, then restore and run:
 dotnet restore
 dotnet run
 ```
+
+When no SQL connection string is configured, the app runs with the built-in in-memory demo database.
 
 ## Azure SQL setup
 
@@ -40,12 +62,7 @@ dotnet ef database update
 
 If you prefer direct SQL before using EF migrations, run `Database/CreateSchema.sql` against your Azure SQL database.
 
-## Demo sign-in
-
-- Email: `admin@eventease.co.za`
-- Password: `Admin123!`
-
 ## Notes
 
 - Azure SQL provides automated backups; this app is prepared to use that by targeting SQL Server through EF Core.
-- Venue images are stored locally for now behind an abstraction. Replace `LocalVenueImageStorage` with Azure Blob Storage when you move file storage to Azure.
+- Venue images are stored locally for now behind an abstraction. The app can switch to Azure Blob Storage when `VenueImages:StorageConnectionString` and `VenueImages:ContainerName` are configured.
