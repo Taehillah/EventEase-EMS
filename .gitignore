@@ -1,0 +1,23 @@
+# Build output
+bin/
+obj/
+
+# Published artifacts
+publish-*/
+publish*/
+appservice-deploy.zip
+
+# Local/editor/system files
+.DS_Store
+.codex-tmp/
+.azure-vm/
+.vs/
+.vscode/
+
+# User/local secrets
+*.user
+*.rsuser
+secrets.json
+
+# Logs
+*.log

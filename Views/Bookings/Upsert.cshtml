@@ -1,0 +1,63 @@
+@model BookingFormViewModel
+@{
+    var isEdit = Model.Id.HasValue;
+    ViewData["Title"] = isEdit ? "Edit Booking" : "Create Booking";
+}
+
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">@ViewData["Title"]</div>
+            <div class="panel-sub">The system blocks repeat venue bookings on the same date and prevents duplicate active reservations for the same event</div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@Model.Id" method="post" class="form-grid">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+            <div class="form-group">
+                <label asp-for="BookingReference"></label>
+                <input asp-for="BookingReference" class="text-input" />
+                <span asp-validation-for="BookingReference" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Status"></label>
+                <select asp-for="Status" asp-items="Html.GetEnumSelectList<BookingStatus>()" class="text-input"></select>
+                <span asp-validation-for="Status" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EventRecordId"></label>
+                <select asp-for="EventRecordId" asp-items="Model.EventOptions" class="text-input"></select>
+                <span asp-validation-for="EventRecordId" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="VenueId"></label>
+                <select asp-for="VenueId" asp-items="Model.VenueOptions" class="text-input"></select>
+                <span asp-validation-for="VenueId" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StartUtc"></label>
+                <input asp-for="StartUtc" class="text-input" type="datetime-local" />
+                <span asp-validation-for="StartUtc" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EndUtc"></label>
+                <input asp-for="EndUtc" class="text-input" type="datetime-local" />
+                <span asp-validation-for="EndUtc" class="field-validation"></span>
+            </div>
+
+            <div class="full-width action-row">
+                <a class="ghost-button" asp-action="Index">Cancel</a>
+                <button type="submit" class="primary-button">Save booking</button>
+            </div>
+        </form>
+    </div>
+</section>

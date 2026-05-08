@@ -1,0 +1,45 @@
+@model VenueIndexViewModel
+@{
+    ViewData["Title"] = "Venues";
+}
+
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">Venue management</div>
+            <div class="panel-sub">Create, update, and track capacity across all venues</div>
+        </div>
+        <a class="primary-button" asp-action="Create">Add venue</a>
+    </div>
+    <div class="panel-body">
+        <form method="get" class="toolbar">
+            <input type="text" name="search" value="@Model.Search" class="text-input" placeholder="Search by venue or location" />
+            <button type="submit" class="ghost-button">Filter</button>
+        </form>
+
+        <div class="card-grid">
+        @foreach (var venue in Model.Venues)
+        {
+            var imagePath = VenueImageDefaults.GetDisplayPath(venue.ImagePath, venue.Name);
+            <article class="entity-card">
+                <div class="entity-media" style="background-image:url('@imagePath')"></div>
+                <div class="entity-body">
+                    <h3>@venue.Name</h3>
+                    <p>@venue.Location</p>
+                    <div class="meta-row">
+                        <span>@venue.Capacity guests</span>
+                    </div>
+                    <div class="entity-actions">
+                        <a class="ghost-button" asp-action="Edit" asp-route-id="@venue.Id">Edit</a>
+                        <form asp-action="Delete" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@venue.Id" />
+                            <button type="submit" class="danger-button" data-confirm="Delete this venue?">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+        }
+        </div>
+    </div>
+</section>

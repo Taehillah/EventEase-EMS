@@ -1,0 +1,89 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <div class="stat-label">Total bookings</div>
+        <div class="stat-value">@Model.TotalBookings</div>
+        <div class="stat-help">All venue reservations in the system.</div>
+    </article>
+    <article class="stat-card">
+        <div class="stat-label">Active venues</div>
+        <div class="stat-value">@Model.ActiveVenues</div>
+        <div class="stat-help">Venue inventory available for scheduling.</div>
+    </article>
+    <article class="stat-card">
+        <div class="stat-label">Upcoming events</div>
+        <div class="stat-value">@Model.UpcomingEvents</div>
+        <div class="stat-help">Scheduled and pending events ahead.</div>
+    </article>
+    <article class="stat-card">
+        <div class="stat-label">Pending bookings</div>
+        <div class="stat-value">@Model.PendingBookings</div>
+        <div class="stat-help">Reservations still awaiting confirmation.</div>
+    </article>
+</section>
+
+<section class="content-grid">
+    <article class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">Recent bookings</div>
+                <div class="panel-sub">Latest reservations across the platform</div>
+            </div>
+            <a class="ghost-button" asp-controller="Bookings" asp-action="Create">New booking</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Event</th>
+                        <th>Venue</th>
+                        <th>Dates</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var booking in Model.RecentBookings)
+                {
+                    <tr>
+                        <td>@booking.BookingReference</td>
+                        <td>@booking.EventRecord?.Name</td>
+                        <td>@booking.Venue?.Name</td>
+                        <td>@booking.StartUtc.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
+                        <td><span class="badge @booking.Status.ToString().ToLowerInvariant()">@booking.Status</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">Upcoming events</div>
+                <div class="panel-sub">Events can exist before a venue is assigned</div>
+            </div>
+            <a class="ghost-button" asp-controller="Events" asp-action="Create">Add event</a>
+        </div>
+        <div class="stack-list">
+        @foreach (var item in Model.UpcomingEventItems)
+        {
+            <div class="stack-item">
+                <div>
+                    <div class="stack-title">@item.Name</div>
+                    <div class="stack-sub">@item.OrganizerName · @item.ExpectedGuests guests</div>
+                </div>
+                <div class="stack-meta">
+                    <div>@item.RequestedStartUtc.ToLocalTime().ToString("dd MMM")</div>
+                    <span class="badge @item.Status.ToString().ToLowerInvariant()">@item.Status</span>
+                </div>
+            </div>
+        }
+        </div>
+    </article>
+</section>

@@ -1,0 +1,69 @@
+@model EventFormViewModel
+@{
+    var isEdit = Model.Id.HasValue;
+    ViewData["Title"] = isEdit ? "Edit Event" : "Create Event";
+}
+
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">@ViewData["Title"]</div>
+            <div class="panel-sub">Capture the event before venue allocation if needed</div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@Model.Id" method="post" class="form-grid">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="text-input" />
+                <span asp-validation-for="Name" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="OrganizerName"></label>
+                <input asp-for="OrganizerName" class="text-input" />
+                <span asp-validation-for="OrganizerName" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="RequestedStartUtc"></label>
+                <input asp-for="RequestedStartUtc" class="text-input" type="datetime-local" />
+                <span asp-validation-for="RequestedStartUtc" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="RequestedEndUtc"></label>
+                <input asp-for="RequestedEndUtc" class="text-input" type="datetime-local" />
+                <span asp-validation-for="RequestedEndUtc" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ExpectedGuests"></label>
+                <input asp-for="ExpectedGuests" class="text-input" />
+                <span asp-validation-for="ExpectedGuests" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Status"></label>
+                <select asp-for="Status" asp-items="Html.GetEnumSelectList<EventStatus>()" class="text-input"></select>
+                <span asp-validation-for="Status" class="field-validation"></span>
+            </div>
+
+            <div class="form-group full-width">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" class="text-input text-area"></textarea>
+                <span asp-validation-for="Description" class="field-validation"></span>
+            </div>
+
+            <div class="full-width action-row">
+                <a class="ghost-button" asp-action="Index">Cancel</a>
+                <button type="submit" class="primary-button">Save event</button>
+            </div>
+        </form>
+    </div>
+</section>

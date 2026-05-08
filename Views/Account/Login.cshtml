@@ -1,0 +1,63 @@
+@model LoginViewModel
+@inject IConfiguration Configuration
+@inject IWebHostEnvironment Environment
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Admin Sign In";
+    var showDemoCredentials = !string.IsNullOrWhiteSpace(Configuration["AdminUser:Email"])
+        && !string.IsNullOrWhiteSpace(Configuration["AdminUser:Password"]);
+}
+
+<div class="auth-page">
+    <section class="auth-card">
+        <div class="logo-wrap">
+            <div class="logo-ring">
+                <svg viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" /></svg>
+            </div>
+        </div>
+
+        <h1>Welcome <span>back</span></h1>
+        <p class="subtitle">Sign in to manage venues, events, and booking schedules.</p>
+
+        <form asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="text-input" placeholder="Enter your email" />
+                <span asp-validation-for="Email" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <div class="password-wrap">
+                    <input asp-for="Password" class="text-input" placeholder="Enter your password" />
+                    <button type="button" class="eye-btn" data-toggle-password="#Password" aria-label="Toggle password">
+                        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" /><circle cx="12" cy="12" r="3" /></svg>
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="field-validation"></span>
+            </div>
+
+            <label class="check-row">
+                <input asp-for="RememberMe" />
+                <span>@Html.DisplayNameFor(m => m.RememberMe)</span>
+            </label>
+
+            <button type="submit" class="primary-button wide-button">Log In</button>
+        </form>
+
+        @if (showDemoCredentials)
+        {
+            <div class="card-footer">
+                Demo credentials:
+                <strong>@Configuration["AdminUser:Email"]</strong>
+                /
+                <strong>@Configuration["AdminUser:Password"]</strong>
+            </div>
+        }
+    </section>
+</div>

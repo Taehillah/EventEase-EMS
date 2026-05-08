@@ -1,0 +1,9 @@
+@if (TempData["StatusMessage"] is string message && !string.IsNullOrWhiteSpace(message))
+{
+    var messageType = TempData["StatusMessageType"] as string;
+    var bannerClass = string.Equals(messageType, "warning", StringComparison.OrdinalIgnoreCase)
+        ? "status-banner warning"
+        : "status-banner";
+
+    <div class="@bannerClass">@message</div>
+}

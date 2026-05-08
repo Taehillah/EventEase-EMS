@@ -1,0 +1,71 @@
+@model VenueFormViewModel
+@{
+    var isEdit = Model.Id.HasValue;
+    ViewData["Title"] = isEdit ? "Edit Venue" : "Create Venue";
+}
+
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title">@ViewData["Title"]</div>
+            <div class="panel-sub">Secure image upload with validated file types and unique storage names</div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <form asp-action="@(isEdit ? "Edit" : "Create")" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" class="form-grid">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="ExistingImagePath" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="text-input" />
+                <span asp-validation-for="Name" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Location"></label>
+                <input asp-for="Location" class="text-input" />
+                <span asp-validation-for="Location" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Capacity"></label>
+                <input asp-for="Capacity" class="text-input" />
+                <span asp-validation-for="Capacity" class="field-validation"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ImageFile"></label>
+                <input asp-for="ImageFile" class="text-input file-input" accept=".jpg,.jpeg,.png,.webp" />
+                <span asp-validation-for="ImageFile" class="field-validation"></span>
+            </div>
+
+            <div class="form-group full-width">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" class="text-input text-area"></textarea>
+                <span asp-validation-for="Description" class="field-validation"></span>
+            </div>
+
+            @{
+                var previewImagePath = !string.IsNullOrWhiteSpace(Model.ExistingImagePath)
+                    ? Model.ExistingImagePath
+                    : VenueImageDefaults.GetDefaultPath(Model.Name);
+            }
+
+            @if (!string.IsNullOrWhiteSpace(previewImagePath))
+            {
+                <div class="full-width image-preview-block">
+                    <img src="@previewImagePath" alt="Venue image" class="image-preview" />
+                </div>
+            }
+
+            <div class="full-width action-row">
+                <a class="ghost-button" asp-action="Index">Cancel</a>
+                <button type="submit" class="primary-button">Save venue</button>
+            </div>
+        </form>
+    </div>
+</section>
