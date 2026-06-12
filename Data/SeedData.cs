@@ -8,6 +8,7 @@ public static class SeedData
     public static async Task InitialiseAsync(ApplicationDbContext context)
     {
         var eventTypes = await SeedEventTypesAsync(context);
+        await ClassifyExistingEventsAsync(context, eventTypes);
 
         if (await context.Venues.AnyAsync() || await context.Events.AnyAsync() || await context.Bookings.AnyAsync())
         {
@@ -71,7 +72,7 @@ public static class SeedData
             {
                 Name = "Tech Summit 2026",
                 OrganizerName = "NovaTech Africa",
-                EventTypeId = eventTypes["Conference"],
+                EventTypeId = eventTypes["Exhibition"],
                 Description = "Regional technology summit with keynote and expo floor.",
                 VenueId = venues[1].Id,
                 RequestedStartUtc = new DateTime(2026, 3, 22, 7, 30, 0, DateTimeKind.Utc),
@@ -163,5 +164,66 @@ public static class SeedData
         return await context.EventTypes
             .AsNoTracking()
             .ToDictionaryAsync(t => t.Name, t => t.Id);
+    }
+
+    private static async Task ClassifyExistingEventsAsync(ApplicationDbContext context, IReadOnlyDictionary<string, int> eventTypes)
+    {
+        var unclassifiedEvents = await context.Events
+            .Where(e => e.EventTypeId == null)
+            .ToListAsync();
+
+        if (unclassifiedEvents.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var eventRecord in unclassifiedEvents)
+        {
+            eventRecord.EventTypeId = GetEventTypeIdForEvent(eventRecord, eventTypes);
+        }
+
+        await context.SaveChangesAsync();
+    }
+
+    private static int GetEventTypeIdForEvent(EventRecord eventRecord, IReadOnlyDictionary<string, int> eventTypes)
+    {
+        var searchableText = $"{eventRecord.Name} {eventRecord.Description} {eventRecord.OrganizerName}".ToLowerInvariant();
+
+        if (searchableText.Contains("wedding") || searchableText.Contains("reception"))
+        {
+            return eventTypes["Wedding"];
+        }
+
+        if (searchableText.Contains("summit") || searchableText.Contains("expo") || searchableText.Contains("exhibition"))
+        {
+            return eventTypes["Exhibition"];
+        }
+
+        if (searchableText.Contains("gala") || searchableText.Contains("dinner") || searchableText.Contains("awards"))
+        {
+            return eventTypes["Gala"];
+        }
+
+        if (searchableText.Contains("concert") || searchableText.Contains("festival") || searchableText.Contains("music"))
+        {
+            return eventTypes["Concert"];
+        }
+
+        if (searchableText.Contains("strategy") || searchableText.Contains("corporate") || searchableText.Contains("board"))
+        {
+            return eventTypes["Corporate"];
+        }
+
+        if (searchableText.Contains("workshop") || searchableText.Contains("training"))
+        {
+            return eventTypes["Workshop"];
+        }
+
+        if (searchableText.Contains("conference") || searchableText.Contains("keynote"))
+        {
+            return eventTypes["Conference"];
+        }
+
+        return eventTypes["Private Function"];
     }
 }
