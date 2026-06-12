@@ -12,6 +12,32 @@
         <a class="primary-button" asp-action="Create">Add event</a>
     </div>
     <div class="panel-body">
+        <div class="event-type-filter-strip" aria-label="Event type filters">
+            <a class="event-type-filter @(Model.EventTypeId.HasValue ? string.Empty : "active")"
+               asp-action="Index"
+               asp-route-search="@Model.Search"
+               asp-route-status="@Model.Status"
+               asp-route-venueId="@Model.VenueId"
+               asp-route-startDate="@Model.StartDate?.ToString("yyyy-MM-dd")"
+               asp-route-endDate="@Model.EndDate?.ToString("yyyy-MM-dd")"
+               asp-route-availability="@Model.Availability">All types</a>
+            @foreach (var typeOption in Model.EventTypeOptions)
+            {
+                var typeId = int.Parse(typeOption.Value ?? "0");
+                var typeClass = typeOption.Text?.ToLowerInvariant().Replace(" ", "-") ?? "event-type";
+
+                <a class="event-type-filter event-type-@typeClass @(Model.EventTypeId == typeId ? "active" : string.Empty)"
+                   asp-action="Index"
+                   asp-route-search="@Model.Search"
+                   asp-route-status="@Model.Status"
+                   asp-route-eventTypeId="@typeOption.Value"
+                   asp-route-venueId="@Model.VenueId"
+                   asp-route-startDate="@Model.StartDate?.ToString("yyyy-MM-dd")"
+                   asp-route-endDate="@Model.EndDate?.ToString("yyyy-MM-dd")"
+                   asp-route-availability="@Model.Availability">@typeOption.Text</a>
+            }
+        </div>
+
         <form method="get" class="toolbar">
             <input type="text" name="search" value="@Model.Search" class="text-input" placeholder="Search event, client, type, or venue" />
             <select name="status" class="text-input">
@@ -106,9 +132,11 @@
                 <tbody>
                 @foreach (var item in Model.Events)
                 {
+                    var eventTypeName = item.EventType?.Name ?? "Unclassified";
+                    var eventTypeClass = eventTypeName.ToLowerInvariant().Replace(" ", "-");
                     <tr>
                         <td>@item.Name</td>
-                        <td>@(item.EventType?.Name ?? "Unclassified")</td>
+                        <td><span class="event-type-badge event-type-@eventTypeClass">@eventTypeName</span></td>
                         <td>@item.OrganizerName</td>
                         <td>@(item.Venue?.Name ?? "Needs venue")</td>
                         <td>@item.RequestedStartUtc.ToLocalTime().ToString("dd MMM yyyy HH:mm") - @item.RequestedEndUtc.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
