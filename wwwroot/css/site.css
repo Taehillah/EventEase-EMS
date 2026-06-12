@@ -552,6 +552,17 @@ tbody tr:last-child td {
   box-shadow: 0 0 0 3px rgba(160, 154, 255, 0.14);
 }
 
+select.text-input option,
+select.text-input optgroup {
+  color: #111827;
+  background: #ffffff;
+}
+
+select.text-input option:checked {
+  color: #111827;
+  background: #b7d8fb;
+}
+
 .text-area {
   min-height: 140px;
   resize: vertical;
