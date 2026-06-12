@@ -3,6 +3,8 @@
 ASP.NET Core MVC admin platform for venue, event, and booking management. The app is structured for Azure SQL integration and already includes:
 
 - Venue, event, and booking entities with CRUD screens
+- Event type lookup data for Conference, Wedding, Concert, Gala, Corporate, Workshop, Exhibition, and Private Function categories
+- Advanced event filtering by search text, status, event type, venue, date range, and booking availability
 - Conflict checks to block double-bookings on overlapping venue times
 - Event-first workflow so events can exist before a venue is assigned
 - Delete protection for venues and events tied to bookings
@@ -10,6 +12,7 @@ ASP.NET Core MVC admin platform for venue, event, and booking management. The ap
 - Cookie-based admin sign-in for authorised staff
 - In-memory fallback for local demo mode when no SQL connection string is set
 - Azure SQL schema script in `Database/CreateSchema.sql`
+- Final reflective report in `docs/Part3-Reflective-Report.md`
 
 ## Current deployment
 
@@ -26,10 +29,12 @@ The root URL redirects to the admin sign-in page:
 /Account/Login?ReturnUrl=%2F
 ```
 
-## Sign-in
+## Local demo sign-in
 
 - Email: `lecture@eventease.com`
 - Password: `Admin@123`
+
+The deployed Azure App Service uses admin credentials stored in Azure application settings.
 
 ## Run prerequisites
 
@@ -64,5 +69,6 @@ If you prefer direct SQL before using EF migrations, run `Database/CreateSchema.
 
 ## Notes
 
+- The app auto-applies EF Core migrations on startup when it is connected to a relational database. This keeps Azure SQL aligned with the deployed application schema.
 - Azure SQL provides automated backups; this app is prepared to use that by targeting SQL Server through EF Core.
 - Venue images are stored locally for now behind an abstraction. The app can switch to Azure Blob Storage when `VenueImages:StorageConnectionString` and `VenueImages:ContainerName` are configured.

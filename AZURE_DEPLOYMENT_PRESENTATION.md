@@ -18,12 +18,9 @@ The deployed application redirects unauthenticated users to:
 /Account/Login?ReturnUrl=%2F
 ```
 
-## Current Sign-In Details
+## Sign-In Configuration
 
-- Email: `lecture@eventease.com`
-- Password: `Admin@123`
-
-These are demo/admin credentials configured through the app configuration. For a production deployment, store admin credentials in Azure App Service application settings rather than committing real secrets to source control.
+Local demo credentials are configured in `appsettings.json`. The deployed Azure App Service uses admin credentials from Azure application settings so production credentials are not committed to source control.
 
 ## Application Stack
 
@@ -39,7 +36,8 @@ These are demo/admin credentials configured through the app configuration. For a
 - Admin login for authorised staff
 - Dashboard overview
 - Venue CRUD
-- Event CRUD
+- Event CRUD with EventType classification
+- Event filtering by text, status, type, venue, date range, and booking availability
 - Booking CRUD
 - Double-booking prevention for active bookings on the same venue/date
 - Deletion protection for venues and events linked to active bookings
@@ -111,6 +109,8 @@ ConnectionStrings__EventEaseDb=<azure-sql-connection-string>
 AdminUser__Email=<admin-email>
 AdminUser__Password=<admin-password>
 ```
+
+When Azure SQL is configured, the application runs EF Core migrations at startup. The Part 3 migration creates the `EventType` lookup table, adds `Event.EventTypeId`, and seeds the predefined event type categories used by the event create/edit and filtering screens.
 
 ## Evidence to Include in Assessment
 

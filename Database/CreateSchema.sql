@@ -6,6 +6,10 @@ IF OBJECT_ID(N'[dbo].[Event]', N'U') IS NOT NULL
     DROP TABLE [dbo].[Event];
 GO
 
+IF OBJECT_ID(N'[dbo].[EventType]', N'U') IS NOT NULL
+    DROP TABLE [dbo].[EventType];
+GO
+
 IF OBJECT_ID(N'[dbo].[Venue]', N'U') IS NOT NULL
     DROP TABLE [dbo].[Venue];
 GO
@@ -25,6 +29,28 @@ GO
 CREATE UNIQUE INDEX [IX_Venue_VenueName] ON [dbo].[Venue]([VenueName]);
 GO
 
+CREATE TABLE [dbo].[EventType]
+(
+    [EventTypeId] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    [EventTypeName] NVARCHAR(80) NOT NULL
+);
+GO
+
+CREATE UNIQUE INDEX [IX_EventType_EventTypeName] ON [dbo].[EventType]([EventTypeName]);
+GO
+
+INSERT INTO [dbo].[EventType] ([EventTypeName])
+VALUES
+    (N'Conference'),
+    (N'Wedding'),
+    (N'Concert'),
+    (N'Gala'),
+    (N'Corporate'),
+    (N'Workshop'),
+    (N'Exhibition'),
+    (N'Private Function');
+GO
+
 CREATE TABLE [dbo].[Event]
 (
     [EventId] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
@@ -32,15 +58,20 @@ CREATE TABLE [dbo].[Event]
     [EventDate] DATETIME2 NOT NULL,
     [Description] NVARCHAR(1200) NULL,
     [VenueId] INT NULL,
+    [EventTypeId] INT NULL,
     [OrganizerName] NVARCHAR(140) NOT NULL,
     [RequestedEndUtc] DATETIME2 NOT NULL,
     [ExpectedGuests] INT NOT NULL,
     [Status] NVARCHAR(40) NOT NULL,
-    CONSTRAINT [FK_Event_Venue_VenueId] FOREIGN KEY ([VenueId]) REFERENCES [dbo].[Venue]([VenueId])
+    CONSTRAINT [FK_Event_Venue_VenueId] FOREIGN KEY ([VenueId]) REFERENCES [dbo].[Venue]([VenueId]),
+    CONSTRAINT [FK_Event_EventType_EventTypeId] FOREIGN KEY ([EventTypeId]) REFERENCES [dbo].[EventType]([EventTypeId])
 );
 GO
 
 CREATE INDEX [IX_Event_VenueId] ON [dbo].[Event]([VenueId]);
+GO
+
+CREATE INDEX [IX_Event_EventTypeId] ON [dbo].[Event]([EventTypeId]);
 GO
 
 CREATE TABLE [dbo].[Booking]

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using EventEase.EMS.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EventEase.EMS.ViewModels;
 
@@ -17,6 +18,10 @@ public class EventFormViewModel
     [StringLength(1200)]
     public string? Description { get; set; }
 
+    [Required]
+    [Display(Name = "Event type")]
+    public int? EventTypeId { get; set; }
+
     [DataType(DataType.DateTime)]
     [Display(Name = "Requested start")]
     public DateTime RequestedStartUtc { get; set; }
@@ -30,4 +35,6 @@ public class EventFormViewModel
     public int ExpectedGuests { get; set; }
 
     public EventStatus Status { get; set; } = EventStatus.PendingVenue;
+
+    public IReadOnlyList<SelectListItem> EventTypeOptions { get; set; } = [];
 }

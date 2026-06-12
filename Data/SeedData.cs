@@ -7,6 +7,8 @@ public static class SeedData
 {
     public static async Task InitialiseAsync(ApplicationDbContext context)
     {
+        var eventTypes = await SeedEventTypesAsync(context);
+
         if (await context.Venues.AnyAsync() || await context.Events.AnyAsync() || await context.Bookings.AnyAsync())
         {
             return;
@@ -57,6 +59,7 @@ public static class SeedData
             {
                 Name = "Gala Dinner 2026",
                 OrganizerName = "Ubuntu Foundation",
+                EventTypeId = eventTypes["Gala"],
                 Description = "Annual donor and partner gala.",
                 VenueId = venues[0].Id,
                 RequestedStartUtc = new DateTime(2026, 3, 24, 17, 0, 0, DateTimeKind.Utc),
@@ -68,6 +71,7 @@ public static class SeedData
             {
                 Name = "Tech Summit 2026",
                 OrganizerName = "NovaTech Africa",
+                EventTypeId = eventTypes["Conference"],
                 Description = "Regional technology summit with keynote and expo floor.",
                 VenueId = venues[1].Id,
                 RequestedStartUtc = new DateTime(2026, 3, 22, 7, 30, 0, DateTimeKind.Utc),
@@ -79,6 +83,7 @@ public static class SeedData
             {
                 Name = "Wedding Reception - Du Plessis",
                 OrganizerName = "Du Plessis Family",
+                EventTypeId = eventTypes["Wedding"],
                 Description = "Private evening reception.",
                 RequestedStartUtc = new DateTime(2026, 3, 21, 14, 0, 0, DateTimeKind.Utc),
                 RequestedEndUtc = new DateTime(2026, 3, 21, 22, 0, 0, DateTimeKind.Utc),
@@ -89,6 +94,7 @@ public static class SeedData
             {
                 Name = "Corporate Strategy Day",
                 OrganizerName = "Blue Peak Holdings",
+                EventTypeId = eventTypes["Corporate"],
                 Description = "Internal strategic planning session awaiting final venue confirmation.",
                 RequestedStartUtc = new DateTime(2026, 3, 25, 6, 0, 0, DateTimeKind.Utc),
                 RequestedEndUtc = new DateTime(2026, 3, 25, 14, 0, 0, DateTimeKind.Utc),
@@ -124,5 +130,38 @@ public static class SeedData
 
         await context.Bookings.AddRangeAsync(bookings);
         await context.SaveChangesAsync();
+    }
+
+    private static async Task<Dictionary<string, int>> SeedEventTypesAsync(ApplicationDbContext context)
+    {
+        string[] predefinedTypes =
+        [
+            "Conference",
+            "Wedding",
+            "Concert",
+            "Gala",
+            "Corporate",
+            "Workshop",
+            "Exhibition",
+            "Private Function"
+        ];
+
+        var existingTypes = await context.EventTypes.ToListAsync();
+        var existingTypeNames = existingTypes.Select(t => t.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var missingTypes = predefinedTypes
+            .Where(typeName => !existingTypeNames.Contains(typeName))
+            .Select(typeName => new EventType { Name = typeName })
+            .ToList();
+
+        if (missingTypes.Count > 0)
+        {
+            await context.EventTypes.AddRangeAsync(missingTypes);
+            await context.SaveChangesAsync();
+        }
+
+        return await context.EventTypes
+            .AsNoTracking()
+            .ToDictionaryAsync(t => t.Name, t => t.Id);
     }
 }

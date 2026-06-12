@@ -13,7 +13,7 @@
     </div>
     <div class="panel-body">
         <form method="get" class="toolbar">
-            <input type="text" name="search" value="@Model.Search" class="text-input" placeholder="Search by event or client" />
+            <input type="text" name="search" value="@Model.Search" class="text-input" placeholder="Search event, client, type, or venue" />
             <select name="status" class="text-input">
                 <option value="">All statuses</option>
                 @foreach (var statusOption in Enum.GetValues<EventStatus>())
@@ -28,6 +28,63 @@
                     }
                 }
             </select>
+            <select name="eventTypeId" class="text-input">
+                <option value="">All event types</option>
+                @foreach (var typeOption in Model.EventTypeOptions)
+                {
+                    @if (Model.EventTypeId?.ToString() == typeOption.Value)
+                    {
+                        <option value="@typeOption.Value" selected>@typeOption.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@typeOption.Value">@typeOption.Text</option>
+                    }
+                }
+            </select>
+            <select name="venueId" class="text-input">
+                <option value="">All venues</option>
+                @foreach (var venueOption in Model.VenueOptions)
+                {
+                    @if (Model.VenueId?.ToString() == venueOption.Value)
+                    {
+                        <option value="@venueOption.Value" selected>@venueOption.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@venueOption.Value">@venueOption.Text</option>
+                    }
+                }
+            </select>
+            <input type="date" name="startDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" class="text-input" aria-label="Start date" />
+            <input type="date" name="endDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" class="text-input" aria-label="End date" />
+            <select name="availability" class="text-input">
+                <option value="">Any availability</option>
+                @if (Model.Availability == "available")
+                {
+                    <option value="available" selected>Available for booking</option>
+                }
+                else
+                {
+                    <option value="available">Available for booking</option>
+                }
+                @if (Model.Availability == "booked")
+                {
+                    <option value="booked" selected>Booked</option>
+                }
+                else
+                {
+                    <option value="booked">Booked</option>
+                }
+                @if (Model.Availability == "unassigned")
+                {
+                    <option value="unassigned" selected>Needs venue</option>
+                }
+                else
+                {
+                    <option value="unassigned">Needs venue</option>
+                }
+            </select>
             <button type="submit" class="ghost-button">Filter</button>
         </form>
 
@@ -36,9 +93,12 @@
                 <thead>
                     <tr>
                         <th>Event</th>
+                        <th>Type</th>
                         <th>Client</th>
+                        <th>Venue</th>
                         <th>Dates</th>
                         <th>Guests</th>
+                        <th>Availability</th>
                         <th>Status</th>
                         <th></th>
                     </tr>
@@ -48,9 +108,21 @@
                 {
                     <tr>
                         <td>@item.Name</td>
+                        <td>@(item.EventType?.Name ?? "Unclassified")</td>
                         <td>@item.OrganizerName</td>
+                        <td>@(item.Venue?.Name ?? "Needs venue")</td>
                         <td>@item.RequestedStartUtc.ToLocalTime().ToString("dd MMM yyyy HH:mm") - @item.RequestedEndUtc.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
                         <td>@item.ExpectedGuests</td>
+                        <td>
+                            @if (item.Bookings.Any(booking => booking.Status != BookingStatus.Cancelled))
+                            {
+                                <span class="badge scheduled">Booked</span>
+                            }
+                            else
+                            {
+                                <span class="badge pendingvenue">Available</span>
+                            }
+                        </td>
                         <td><span class="badge @item.Status.ToString().ToLowerInvariant()">@item.Status</span></td>
                         <td class="row-actions">
                             <a class="ghost-button" asp-action="Edit" asp-route-id="@item.Id">Edit</a>

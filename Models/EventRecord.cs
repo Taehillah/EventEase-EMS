@@ -18,6 +18,9 @@ public class EventRecord
     [Display(Name = "Venue")]
     public int? VenueId { get; set; }
 
+    [Display(Name = "Event type")]
+    public int? EventTypeId { get; set; }
+
     [Display(Name = "Start date and time")]
     public DateTime RequestedStartUtc { get; set; }
 
@@ -31,5 +34,6 @@ public class EventRecord
     public EventStatus Status { get; set; } = EventStatus.PendingVenue;
 
     public Venue? Venue { get; set; }
+    public EventType? EventType { get; set; }
     public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }
